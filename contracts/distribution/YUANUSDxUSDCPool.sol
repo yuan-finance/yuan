@@ -731,7 +731,7 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
 
     uint256 public starttime = 1597172400; // 2020-08-11 19:00:00 (UTC UTC +00:00)
     uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0;
+    uint256 public initialRewardRate = 0;
     uint256 public lastUpdateTime;
     uint256 public distributionTime;
     uint256 public rewardPerTokenStored;
@@ -867,7 +867,7 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
             );
     }
 
-    function getCurrentRewardRate() public view returns (uint256) {
+    function rewardRate() public view returns (uint256) {
         return getFixedRewardRate(block.timestamp);
     }
 
@@ -878,7 +878,7 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
     {
         if (_timestamp < distributionTime) return 0;
         return
-            rewardRate >>
+            initialRewardRate >>
             (Math.min(_timestamp, periodFinish).sub(distributionTime) /
                 halveInterval);
     }
@@ -893,13 +893,13 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
         );
         if (block.timestamp > starttime) {
             require(block.timestamp >= periodFinish, "not over yet");
-            rewardRate = _firstReward.div(halveInterval);
+            initialRewardRate = _firstReward.div(halveInterval);
             lastUpdateTime = block.timestamp;
             distributionTime = block.timestamp;
             periodFinish = block.timestamp.add(DURATION);
             emit RewardAdded(reward);
         } else {
-            rewardRate = _firstReward.div(halveInterval);
+            initialRewardRate = _firstReward.div(halveInterval);
             lastUpdateTime = starttime;
             distributionTime = starttime;
             periodFinish = starttime.add(DURATION);
