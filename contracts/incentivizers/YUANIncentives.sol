@@ -1,15 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-07-27
- */
-
-/**
- *Submitted for verification at Etherscan.io on 2020-07-26
- */
-
-/**
- *Submitted for verification at Etherscan.io on 2020-07-17
- */
-
 /*
    ____            __   __        __   _
   / __/__ __ ___  / /_ / /  ___  / /_ (_)__ __
@@ -676,7 +664,7 @@ library SafeERC20 {
 pragma solidity 0.5.15;
 
 contract IRewardDistributionRecipient is Ownable {
-    address rewardDistribution;
+    address public rewardDistribution;
 
     function notifyRewardAmount(uint256 reward) external;
 
@@ -741,8 +729,9 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
     IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
     uint256 public constant DURATION = 7 days;
 
-    uint256 public initreward = 925 * 10**2 * 10**18; // 92.5k
-    uint256 public starttime = 1600560000; // 2020-09-20 00:00:00 (UTC +00:00)
+    uint256 public initreward = 100000 * 10**18; // 10w
+    uint256 public starttime = 1601265600; // 2020-09-28 12:00:00 (UTC +00:00)
+
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;
