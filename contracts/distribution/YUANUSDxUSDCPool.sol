@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-07-17
- */
-
 /*
    ____            __   __        __   _
   / __/__ __ ___  / /_ / /  ___  / /_ (_)__ __
@@ -686,8 +682,6 @@ contract IRewardDistributionRecipient is Ownable {
     }
 }
 
-// File: contracts/CurveRewards.sol
-
 pragma solidity ^0.5.0;
 
 interface YUAN {
@@ -726,8 +720,8 @@ contract LPTokenWrapper {
 
 contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
     IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
-    uint256 public constant DURATION = 3600; // ~7 1/4 days
-    uint256 public constant halveInterval = 300; // ~7 1/4 days
+    uint256 public constant DURATION = 16 days;
+    uint256 public constant halveInterval = 1 days;
 
     uint256 public starttime = 1597172400; // 2020-08-11 19:00:00 (UTC UTC +00:00)
     uint256 public periodFinish = 0;
