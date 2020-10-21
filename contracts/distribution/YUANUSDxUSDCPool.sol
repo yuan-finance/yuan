@@ -882,8 +882,8 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
         onlyRewardDistribution
         updateReward(address(0))
     {
-        uint256 _firstReward = (reward >> 1).mul(1e18).div(
-            1e18 - (5e17 >> (DURATION.div(halveInterval).sub(1)))
+        uint256 _firstReward = reward.mul(1e18).div(
+            2e18 - (2e18 >> (DURATION.div(halveInterval)))
         );
         if (block.timestamp > starttime) {
             require(block.timestamp >= periodFinish, "not over yet");
