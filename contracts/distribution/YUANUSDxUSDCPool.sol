@@ -882,6 +882,10 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
         onlyRewardDistribution
         updateReward(address(0))
     {
+        // https://sips.synthetix.io/sips/sip-77
+        // increased buffer for scaling factor ( supports up to 10**4 * 10**18 scaling factor)
+        require(reward < uint256(-1) / 10**22, "rewards too large, would lock");
+
         uint256 _firstReward = reward.mul(1e18).div(
             2e18 - (2e18 >> (DURATION.div(halveInterval)))
         );
