@@ -861,8 +861,9 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
             periodFinish = block.timestamp.add(DURATION);
             emit RewardAdded(reward);
         } else {
+            // increased buffer for scaling factor
             require(
-                initreward < uint256(-1) / 10**18,
+                initreward < uint256(-1) / 10**22,
                 "rewards too large, would lock"
             );
             require(!initialized, "already initialized");
