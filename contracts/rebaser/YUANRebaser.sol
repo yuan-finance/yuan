@@ -338,10 +338,14 @@ contract YUANRebaser {
         onlyGov
     {
         require(reserveIndex_ < 3);
-        require(rebaseMintPerc_ < MAX_MINT_PERC_PARAM);
 
         uint256 oldRebaseMintPercs = rebaseMintPercs[reserveIndex_];
         rebaseMintPercs[reserveIndex_] = rebaseMintPerc_;
+
+        require(
+            rebaseMintPercs[0] + rebaseMintPercs[1] + rebaseMintPercs[2] <
+                MAX_MINT_PERC_PARAM
+        );
 
         emit NewRebaseMintPercent(
             reserveIndex_,
