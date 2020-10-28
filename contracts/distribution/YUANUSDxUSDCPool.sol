@@ -803,7 +803,7 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
             uint256 scalingFactor = YUAN(address(yuan)).yuansScalingFactor();
             uint256 trueReward = reward.mul(scalingFactor).div(10**18);
             yuan.safeTransfer(msg.sender, trueReward);
-            emit RewardPaid(msg.sender, trueReward);
+            emit RewardPaid(msg.sender, reward);
         }
     }
 

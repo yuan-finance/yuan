@@ -729,23 +729,23 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
     IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
     uint256 public constant DURATION = 7 days;
 
-    uint256 public initreward = 100000 * 10**18; // 10w
+    uint256 public initreward = 100000 * 10**18; // 10w with base scalingFactor
     uint256 public starttime = 1601265600; // 2020-09-28 12:00:00 (UTC +00:00)
 
     uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0;
+    uint256 public rewardRate = 0; // with base scalingFactor
     uint256 public lastUpdateTime;
-    uint256 public rewardPerTokenStored;
+    uint256 public rewardPerTokenStored; // with base scalingFactor
 
     bool public initialized = false;
 
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
 
-    event RewardAdded(uint256 reward);
+    event RewardAdded(uint256 reward); // with base scalingFactor
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
-    event RewardPaid(address indexed user, uint256 reward);
+    event RewardPaid(address indexed user, uint256 reward); // with base scalingFactor
 
     modifier updateReward(address account) {
         rewardPerTokenStored = rewardPerToken();
@@ -817,7 +817,7 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
             uint256 scalingFactor = YUAN(address(yuan)).yuansScalingFactor();
             uint256 trueReward = reward.mul(scalingFactor).div(10**18);
             yuan.safeTransfer(msg.sender, trueReward);
-            emit RewardPaid(msg.sender, trueReward);
+            emit RewardPaid(msg.sender, reward);
         }
     }
 
@@ -867,11 +867,15 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
             );
             require(!initialized, "already initialized");
             initialized = true;
-            yuan.mint(address(this), initreward);
+
+            uint256 scalingFactor = YUAN(address(yuan)).yuansScalingFactor();
+            uint256 newRewards = initreward.mul(scalingFactor).div(10**18);
+            yuan.mint(address(this), newRewards);
+
             rewardRate = initreward.div(DURATION);
             lastUpdateTime = starttime;
             periodFinish = starttime.add(DURATION);
-            emit RewardAdded(reward);
+            emit RewardAdded(initreward);
         }
     }
 
