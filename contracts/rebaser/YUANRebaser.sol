@@ -75,6 +75,11 @@ contract YUANRebaser {
     );
 
     /**
+     * @notice Sets the price oracle
+     */
+    event NewPriceOracle(address oldPriceOracle, address newPriceOracle);
+
+    /**
      * @notice Sets the reserve contract
      */
     event TreasuryIncreased(
@@ -857,7 +862,6 @@ contract YUANRebaser {
      *
      */
     function getExchangeRate() internal returns (uint256) {
-        // TODO: Check the timestamp of the price
         uint256 price = IPriceOracle(priceOracle).getPrice(reserveToken);
         require(price > 0, "Reserve token price can not be 0");
 
@@ -953,7 +957,9 @@ contract YUANRebaser {
      */
     function setPriceOracle(address priceOracle_) external onlyGov {
         require(priceOracle_ != address(0));
+        address oldPriceOracle = priceOracle;
         priceOracle = priceOracle_;
+        emit NewPriceOracle(oldPriceOracle, priceOracle_);
     }
 
     /**
