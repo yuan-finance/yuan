@@ -796,12 +796,12 @@ contract YUANRebaser {
 
         if (mintAmounts[0] > 0) {
             buyReserveAndTransfer(mintAmounts[0], offPegPerc);
-
-            YUANTokenInterface yuan = YUANTokenInterface(yuanAddress);
-
-            yuan.mint(reservesContracts[1], mintAmounts[1]);
-            yuan.mint(reservesContracts[2], mintAmounts[2]);
         }
+
+        YUANTokenInterface yuan = YUANTokenInterface(yuanAddress);
+
+        if (mintAmounts[1] > 0) yuan.mint(reservesContracts[1], mintAmounts[1]);
+        if (mintAmounts[2] > 0) yuan.mint(reservesContracts[2], mintAmounts[2]);
 
         // call any extra functions
         for (uint256 i = 0; i < transactions.length; i++) {
