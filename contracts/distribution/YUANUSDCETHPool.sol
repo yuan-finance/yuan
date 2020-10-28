@@ -814,6 +814,10 @@ contract YUANUSDCETHPool is LPTokenWrapper, IRewardDistributionRecipient {
         onlyRewardDistribution
         updateReward(address(0))
     {
+        // https://sips.synthetix.io/sips/sip-77
+        // increased buffer for scaling factor ( supports up to 10**4 * 10**18 scaling factor)
+        require(reward < uint256(-1) / 10**22, "rewards too large, would lock");
+
         if (block.timestamp > starttime) {
             if (block.timestamp >= periodFinish) {
                 rewardRate = reward.div(DURATION);
