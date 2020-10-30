@@ -425,6 +425,10 @@ contract YUANRebaser {
         // cannot enable prior to end of rebaseDelay
         require(now >= timeOfTWAPInit + rebaseDelay, "!end_delay");
 
+        // cannot enable without reserve token price
+        uint256 price = IPriceOracle(priceOracle).getPrice(reserveToken);
+        require(price > 0, "Reserve token price is not available");
+
         rebasingActive = true;
     }
 
