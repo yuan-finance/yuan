@@ -276,4 +276,14 @@ contract RewardDistributor is Ownable {
         addRecipient(recipient);
         setRecipientRewardAndDuration(recipient, reward, duration);
     }
+
+    // if people are dumb and send tokens here, give governance ability to save them.
+    function rescueTokens(
+        address token,
+        address to,
+        uint256 amount
+    ) external onlyOwner {
+        // transfer to
+        SafeERC20.safeTransfer(IERC20(token), to, amount);
+    }
 }
