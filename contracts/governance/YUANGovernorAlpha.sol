@@ -42,12 +42,12 @@ contract GovernorAlpha {
 
     /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
     function quorumVotes() public view returns (uint256) {
-        return 200000 * 10**24;
+        return 89600 * 10**24;
     } // 4% of YUAN
 
     /// @notice The number of votes required in order for a voter to become a proposer
     function proposalThreshold() public view returns (uint256) {
-        return 50000 * 10**24;
+        return 22400 * 10**24;
     } // 1% of YUAN
 
     /// @notice The maximum number of actions that can be included in a proposal

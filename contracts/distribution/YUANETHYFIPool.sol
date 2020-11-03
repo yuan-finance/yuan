@@ -5,7 +5,7 @@
 /___/ \_, //_//_/\__//_//_/\__/ \__//_/ /_\_\
      /___/
 
-* Synthetix: YUANIncentives.sol
+* Synthetix: YUANRewards.sol
 *
 * Docs: https://docs.synthetix.io/
 *
@@ -35,7 +35,7 @@
 
 // File: @openzeppelin/contracts/math/Math.sol
 
-pragma solidity 0.5.15;
+pragma solidity ^0.5.0;
 
 /**
  * @dev Standard math utilities missing in the Solidity language.
@@ -67,7 +67,7 @@ library Math {
 
 // File: @openzeppelin/contracts/math/SafeMath.sol
 
-pragma solidity 0.5.15;
+pragma solidity ^0.5.0;
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -238,7 +238,7 @@ library SafeMath {
 
 // File: @openzeppelin/contracts/GSN/Context.sol
 
-pragma solidity 0.5.15;
+pragma solidity ^0.5.0;
 
 /*
  * @dev Provides information about the current execution context, including the
@@ -269,7 +269,7 @@ contract Context {
 
 // File: @openzeppelin/contracts/ownership/Ownable.sol
 
-pragma solidity 0.5.15;
+pragma solidity ^0.5.0;
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -353,7 +353,7 @@ contract Ownable is Context {
 
 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
 
-pragma solidity 0.5.15;
+pragma solidity ^0.5.0;
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP. Does not include
@@ -380,8 +380,6 @@ interface IERC20 {
     function transfer(address recipient, uint256 amount)
         external
         returns (bool);
-
-    function mint(address account, uint256 amount) external;
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
@@ -447,7 +445,7 @@ interface IERC20 {
 
 // File: @openzeppelin/contracts/utils/Address.sol
 
-pragma solidity 0.5.15;
+pragma solidity ^0.5.5;
 
 /**
  * @dev Collection of functions related to the address type
@@ -533,7 +531,7 @@ library Address {
 
 // File: @openzeppelin/contracts/token/ERC20/SafeERC20.sol
 
-pragma solidity 0.5.15;
+pragma solidity ^0.5.0;
 
 /**
  * @title SafeERC20
@@ -661,7 +659,7 @@ library SafeERC20 {
 
 // File: contracts/IRewardDistributionRecipient.sol
 
-pragma solidity 0.5.15;
+pragma solidity ^0.5.0;
 
 contract IRewardDistributionRecipient is Ownable {
     address public rewardDistribution;
@@ -684,18 +682,19 @@ contract IRewardDistributionRecipient is Ownable {
     }
 }
 
-// File: contracts/CurveRewards.sol
+pragma solidity ^0.5.0;
 
-pragma solidity 0.5.15;
+interface YUAN {
+    function yuansScalingFactor() external returns (uint256);
+}
 
 contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0x2C7a51A357d5739C5C74Bf3C96816849d2c9F726);
+    IERC20 public uni_lp = IERC20(0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28);
 
     uint256 private _totalSupply;
-
     mapping(address => uint256) private _balances;
 
     function totalSupply() public view returns (uint256) {
@@ -719,33 +718,27 @@ contract LPTokenWrapper {
     }
 }
 
-interface YUAN {
-    function yuansScalingFactor() external returns (uint256);
-
-    function mint(address to, uint256 amount) external;
-}
-
-contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
+contract YUANETHYFIPool is LPTokenWrapper, IRewardDistributionRecipient {
     IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
-    uint256 public constant DURATION = 7 days;
+    uint256 public constant DURATION = 12 days;
 
-    uint256 public initreward = 100000 * 10**18; // 10w with base scalingFactor
-    uint256 public starttime = 1601265600; // 2020-09-28 12:00:00 (UTC +00:00)
-
+    uint256 public starttime = 1604462400; // 2020/11/4 12:0:0 (UTC+8)
     uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0; // with base scalingFactor
+    uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;
-    uint256 public rewardPerTokenStored; // with base scalingFactor
-
-    bool public initialized = false;
-
+    uint256 public rewardPerTokenStored;
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
 
-    event RewardAdded(uint256 reward); // with base scalingFactor
+    event RewardAdded(uint256 reward);
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
-    event RewardPaid(address indexed user, uint256 reward); // with base scalingFactor
+    event RewardPaid(address indexed user, uint256 reward);
+
+    modifier checkStart() {
+        require(block.timestamp >= starttime, "not start");
+        _;
+    }
 
     modifier updateReward(address account) {
         rewardPerTokenStored = rewardPerToken();
@@ -784,12 +777,7 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
     }
 
     // stake visibility is public as overriding LPTokenWrapper's stake() function
-    function stake(uint256 amount)
-        public
-        updateReward(msg.sender)
-        checkhalve
-        checkStart
-    {
+    function stake(uint256 amount) public updateReward(msg.sender) checkStart {
         require(amount > 0, "Cannot stake 0");
         super.stake(amount);
         emit Staked(msg.sender, amount);
@@ -810,7 +798,7 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
         getReward();
     }
 
-    function getReward() public updateReward(msg.sender) checkhalve checkStart {
+    function getReward() public updateReward(msg.sender) checkStart {
         uint256 reward = rewards[msg.sender];
         if (reward > 0) {
             rewards[msg.sender] = 0;
@@ -819,25 +807,6 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
             yuan.safeTransfer(msg.sender, trueReward);
             emit RewardPaid(msg.sender, reward);
         }
-    }
-
-    modifier checkhalve() {
-        if (block.timestamp >= periodFinish) {
-            initreward = initreward.mul(90).div(100);
-            uint256 scalingFactor = YUAN(address(yuan)).yuansScalingFactor();
-            uint256 newRewards = initreward.mul(scalingFactor).div(10**18);
-            yuan.mint(address(this), newRewards);
-
-            rewardRate = initreward.div(DURATION);
-            periodFinish = block.timestamp.add(DURATION);
-            emit RewardAdded(initreward);
-        }
-        _;
-    }
-
-    modifier checkStart() {
-        require(block.timestamp >= starttime, "not start");
-        _;
     }
 
     function notifyRewardAmount(uint256 reward)
@@ -861,43 +830,10 @@ contract YUANIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
             periodFinish = block.timestamp.add(DURATION);
             emit RewardAdded(reward);
         } else {
-            // increased buffer for scaling factor
-            require(
-                initreward < uint256(-1) / 10**22,
-                "rewards too large, would lock"
-            );
-            require(!initialized, "already initialized");
-            initialized = true;
-
-            uint256 scalingFactor = YUAN(address(yuan)).yuansScalingFactor();
-            uint256 newRewards = initreward.mul(scalingFactor).div(10**18);
-            yuan.mint(address(this), newRewards);
-
-            rewardRate = initreward.div(DURATION);
+            rewardRate = reward.div(DURATION);
             lastUpdateTime = starttime;
             periodFinish = starttime.add(DURATION);
-            emit RewardAdded(initreward);
+            emit RewardAdded(reward);
         }
-    }
-
-    // This function allows governance to take unsupported tokens out of the
-    // contract, since this one exists longer than the other pools.
-    // This is in an effort to make someone whole, should they seriously
-    // mess up. There is no guarantee governance will vote to return these.
-    // It also allows for removal of airdropped tokens.
-    function rescueTokens(
-        IERC20 _token,
-        uint256 amount,
-        address to
-    ) external {
-        // only gov
-        require(msg.sender == owner(), "!governance");
-        // cant take staked asset
-        require(_token != uni_lp, "uni_lp");
-        // cant take reward asset
-        require(_token != yuan, "yuan");
-
-        // transfer to
-        _token.safeTransfer(to, amount);
     }
 }

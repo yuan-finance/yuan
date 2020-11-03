@@ -1,5 +1,6 @@
 // ============ Contracts ============
 
+
 // Token
 // deployed first
 const YUANImplementation = artifacts.require("YUANDelegate");
@@ -15,10 +16,14 @@ const YUANRebaser = artifacts.require("YUANRebaser");
 const Gov = artifacts.require("GovernorAlpha");
 const Timelock = artifacts.require("Timelock");
 
+
+
 // ============ Main Migration ============
 
 const migration = async (deployer, network, accounts) => {
-  await Promise.all([deployGovernance(deployer, network)]);
+  await Promise.all([
+    deployGovernance(deployer, network),
+  ]);
 };
 
 module.exports = migration;
@@ -32,5 +37,8 @@ module.exports = migration;
 
 async function deployGovernance(deployer, network) {
   await deployer.deploy(Timelock);
-  await deployer.deploy(Gov, Timelock.address, YUANProxy.address);
+  await deployer.deploy(Gov,
+      Timelock.address,
+      YUANProxy.address
+  );
 }

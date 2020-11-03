@@ -5,7 +5,7 @@
 /___/ \_, //_//_/\__//_//_/\__/ \__//_/ /_\_\
      /___/
 
-* Synthetix: YUANUSDCETHPool.sol
+* Synthetix: YUANRewards.sol
 *
 * Docs: https://docs.synthetix.io/
 *
@@ -692,7 +692,7 @@ contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc);
+    IERC20 public uni_lp = IERC20(0xf421c3f2e695C2D4C0765379cCace8adE4a480D9);
 
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
@@ -718,11 +718,11 @@ contract LPTokenWrapper {
     }
 }
 
-contract YUANUSDCETHPool is LPTokenWrapper, IRewardDistributionRecipient {
+contract YUANETHBANDPool is LPTokenWrapper, IRewardDistributionRecipient {
     IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
-    uint256 public constant DURATION = 10 days;
+    uint256 public constant DURATION = 12 days;
 
-    uint256 public starttime = 1601186900; // 2020-08-11 19:00:00 (UTC UTC +00:00)
+    uint256 public starttime = 1604462400; // 2020/11/4 12:0:0 (UTC+8)
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;

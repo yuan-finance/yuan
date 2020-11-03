@@ -1,6 +1,72 @@
+/*
+   ____            __   __        __   _
+  / __/__ __ ___  / /_ / /  ___  / /_ (_)__ __
+ _\ \ / // // _ \/ __// _ \/ -_)/ __// / \ \ /
+/___/ \_, //_//_/\__//_//_/\__/ \__//_/ /_\_\
+     /___/
+* Synthetix: YUANIncentives.sol
+*
+* Docs: https://docs.synthetix.io/
+*
+*
+* MIT License
+* ===========
+*
+* Copyright (c) 2020 Synthetix
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+*/
+
+// File: @openzeppelin/contracts/math/Math.sol
+
+pragma solidity 0.5.15;
+
+/**
+ * @dev Standard math utilities missing in the Solidity language.
+ */
+library Math {
+    /**
+     * @dev Returns the largest of two numbers.
+     */
+    function max(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a >= b ? a : b;
+    }
+
+    /**
+     * @dev Returns the smallest of two numbers.
+     */
+    function min(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a < b ? a : b;
+    }
+
+    /**
+     * @dev Returns the average of two numbers. The result is rounded towards
+     * zero.
+     */
+    function average(uint256 a, uint256 b) internal pure returns (uint256) {
+        // (a + b) / 2 can overflow, so we distribute
+        return (a / 2) + (b / 2) + (((a % 2) + (b % 2)) / 2);
+    }
+}
+
 // File: @openzeppelin/contracts/math/SafeMath.sol
 
-pragma solidity ^0.5.0;
+pragma solidity 0.5.15;
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -166,92 +232,6 @@ library SafeMath {
     ) internal pure returns (uint256) {
         require(b != 0, errorMessage);
         return a % b;
-    }
-}
-
-// File: @openzeppelin/contracts/utils/Address.sol
-
-pragma solidity ^0.5.5;
-
-/**
- * @dev Collection of functions related to the address type
- */
-library Address {
-    /**
-     * @dev Returns true if `account` is a contract.
-     *
-     * This test is non-exhaustive, and there may be false-negatives: during the
-     * execution of a contract's constructor, its address will be reported as
-     * not containing a contract.
-     *
-     * IMPORTANT: It is unsafe to assume that an address for which this
-     * function returns false is an externally-owned account (EOA) and not a
-     * contract.
-     */
-    function isContract(address account) internal view returns (bool) {
-        // This method relies in extcodesize, which returns 0 for contracts in
-        // construction, since the code is only stored at the end of the
-        // constructor execution.
-
-        // According to EIP-1052, 0x0 is the value returned for not-yet created accounts
-        // and 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470 is returned
-        // for accounts without code, i.e. `keccak256('')`
-        bytes32 codehash;
-
-
-            bytes32 accountHash
-         = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
-        // solhint-disable-next-line no-inline-assembly
-        assembly {
-            codehash := extcodehash(account)
-        }
-        return (codehash != 0x0 && codehash != accountHash);
-    }
-
-    /**
-     * @dev Converts an `address` into `address payable`. Note that this is
-     * simply a type cast: the actual underlying value is not changed.
-     *
-     * _Available since v2.4.0._
-     */
-    function toPayable(address account)
-        internal
-        pure
-        returns (address payable)
-    {
-        return address(uint160(account));
-    }
-
-    /**
-     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
-     * `recipient`, forwarding all available gas and reverting on errors.
-     *
-     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
-     * of certain opcodes, possibly making contracts go over the 2300 gas limit
-     * imposed by `transfer`, making them unable to receive funds via
-     * `transfer`. {sendValue} removes this limitation.
-     *
-     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].
-     *
-     * IMPORTANT: because control is transferred to `recipient`, care must be
-     * taken to not create reentrancy vulnerabilities. Consider using
-     * {ReentrancyGuard} or the
-     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
-     *
-     * _Available since v2.4.0._
-     */
-    function sendValue(address payable recipient, uint256 amount) internal {
-        require(
-            address(this).balance >= amount,
-            "Address: insufficient balance"
-        );
-
-        // solhint-disable-next-line avoid-call-value
-        (bool success, ) = recipient.call.value(amount)("");
-        require(
-            success,
-            "Address: unable to send value, recipient may have reverted"
-        );
     }
 }
 
@@ -464,9 +444,95 @@ interface IERC20 {
     );
 }
 
+// File: @openzeppelin/contracts/utils/Address.sol
+
+pragma solidity 0.5.15;
+
+/**
+ * @dev Collection of functions related to the address type
+ */
+library Address {
+    /**
+     * @dev Returns true if `account` is a contract.
+     *
+     * This test is non-exhaustive, and there may be false-negatives: during the
+     * execution of a contract's constructor, its address will be reported as
+     * not containing a contract.
+     *
+     * IMPORTANT: It is unsafe to assume that an address for which this
+     * function returns false is an externally-owned account (EOA) and not a
+     * contract.
+     */
+    function isContract(address account) internal view returns (bool) {
+        // This method relies in extcodesize, which returns 0 for contracts in
+        // construction, since the code is only stored at the end of the
+        // constructor execution.
+
+        // According to EIP-1052, 0x0 is the value returned for not-yet created accounts
+        // and 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470 is returned
+        // for accounts without code, i.e. `keccak256('')`
+        bytes32 codehash;
+
+
+            bytes32 accountHash
+         = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            codehash := extcodehash(account)
+        }
+        return (codehash != 0x0 && codehash != accountHash);
+    }
+
+    /**
+     * @dev Converts an `address` into `address payable`. Note that this is
+     * simply a type cast: the actual underlying value is not changed.
+     *
+     * _Available since v2.4.0._
+     */
+    function toPayable(address account)
+        internal
+        pure
+        returns (address payable)
+    {
+        return address(uint160(account));
+    }
+
+    /**
+     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+     * `recipient`, forwarding all available gas and reverting on errors.
+     *
+     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
+     * of certain opcodes, possibly making contracts go over the 2300 gas limit
+     * imposed by `transfer`, making them unable to receive funds via
+     * `transfer`. {sendValue} removes this limitation.
+     *
+     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].
+     *
+     * IMPORTANT: because control is transferred to `recipient`, care must be
+     * taken to not create reentrancy vulnerabilities. Consider using
+     * {ReentrancyGuard} or the
+     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
+     *
+     * _Available since v2.4.0._
+     */
+    function sendValue(address payable recipient, uint256 amount) internal {
+        require(
+            address(this).balance >= amount,
+            "Address: insufficient balance"
+        );
+
+        // solhint-disable-next-line avoid-call-value
+        (bool success, ) = recipient.call.value(amount)("");
+        require(
+            success,
+            "Address: unable to send value, recipient may have reverted"
+        );
+    }
+}
+
 // File: @openzeppelin/contracts/token/ERC20/SafeERC20.sol
 
-pragma solidity ^0.5.0;
+pragma solidity 0.5.15;
 
 /**
  * @title SafeERC20
@@ -592,82 +658,219 @@ library SafeERC20 {
     }
 }
 
+// File: contracts/IRewardDistributionRecipient.sol
+
 pragma solidity 0.5.15;
 
-interface IRewardDistributionRecipient {
-    function notifyRewardAmountAndDuration(uint256 rewardRate, uint256 duration)
+contract IRewardDistributionRecipient is Ownable {
+    address public rewardDistribution;
+
+    function notifyRewardAmountAndDuration(uint256 reward, uint256 _duration)
         external;
+
+    modifier onlyRewardDistribution() {
+        require(
+            _msgSender() == rewardDistribution,
+            "Caller is not reward distribution"
+        );
+        _;
+    }
+
+    function setRewardDistribution(address _rewardDistribution)
+        external
+        onlyOwner
+    {
+        rewardDistribution = _rewardDistribution;
+    }
 }
 
-contract RewardDistributor is Ownable {
-    IERC20 public constant yuan = IERC20(
-        0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16
-    );
+pragma solidity 0.5.15;
 
-    mapping(address => bool) public isRecipient;
+contract LPTokenWrapper {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
 
-    event RecipientAdded(address recipient);
-    event RecipientRemoved(address recipient);
+    IERC20 public uni_lp = IERC20(0xe2aAb7232a9545F29112f9e6441661fD6eEB0a5d);
 
-    function setRecipientRewardAndDuration(
-        address recipient,
-        uint256 reward,
-        uint256 duration
-    ) public onlyOwner {
-        require(isRecipient[recipient], "recipient has not been added");
+    uint256 private _totalSupply;
 
-        IRewardDistributionRecipient(recipient).notifyRewardAmountAndDuration(
-            reward,
-            duration
-        );
+    mapping(address => uint256) private _balances;
+
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
     }
 
-    function transferReward(address to, uint256 value) external {
-        require(isRecipient[msg.sender], "recipient has not been added");
-
-        yuan.mint(to, value);
+    function balanceOf(address account) public view returns (uint256) {
+        return _balances[account];
     }
 
-    function addRecipient(address recipient) public onlyOwner {
-        if (!isRecipient[recipient]) {
-            isRecipient[recipient] = true;
-            emit RecipientAdded(recipient);
+    function stake(uint256 amount) public {
+        _totalSupply = _totalSupply.add(amount);
+        _balances[msg.sender] = _balances[msg.sender].add(amount);
+        uni_lp.safeTransferFrom(msg.sender, address(this), amount);
+    }
+
+    function withdraw(uint256 amount) public {
+        _totalSupply = _totalSupply.sub(amount);
+        _balances[msg.sender] = _balances[msg.sender].sub(amount);
+        uni_lp.safeTransfer(msg.sender, amount);
+    }
+}
+
+interface YUAN {
+    function yuansScalingFactor() external returns (uint256);
+}
+
+interface IRewardDistribution {
+    function transferReward(address to, uint256 value) external;
+}
+
+contract YUANUSDxIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
+    IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
+    uint256 public duration;
+
+    //uint256 public initreward = 100000 * 10**18; // 10w with base scalingFactor
+    uint256 public starttime = 1601265600; // 2020-09-28 12:00:00 (UTC +00:00)
+    uint256 public periodFinish = 0;
+    uint256 public rewardRate = 0; // with base scalingFactor
+    uint256 public lastUpdateTime;
+    uint256 public rewardPerTokenStored; // with base scalingFactor
+
+    bool public initialized = false;
+
+    mapping(address => uint256) public userRewardPerTokenPaid;
+    mapping(address => uint256) public rewards;
+
+    event RewardAdded(uint256 reward, uint256 duration); // with base scalingFactor
+    event Staked(address indexed user, uint256 amount);
+    event Withdrawn(address indexed user, uint256 amount);
+    event RewardPaid(address indexed user, uint256 reward); // with base scalingFactor
+
+    modifier updateReward(address account) {
+        rewardPerTokenStored = rewardPerToken();
+        lastUpdateTime = lastTimeRewardApplicable();
+        if (account != address(0)) {
+            rewards[account] = earned(account);
+            userRewardPerTokenPaid[account] = rewardPerTokenStored;
+        }
+        _;
+    }
+
+    function lastTimeRewardApplicable() public view returns (uint256) {
+        return Math.min(block.timestamp, periodFinish);
+    }
+
+    function rewardPerToken() public view returns (uint256) {
+        if (totalSupply() == 0) {
+            return rewardPerTokenStored;
+        }
+        return
+            rewardPerTokenStored.add(
+                lastTimeRewardApplicable()
+                    .sub(lastUpdateTime)
+                    .mul(rewardRate)
+                    .mul(1e18)
+                    .div(totalSupply())
+            );
+    }
+
+    function earned(address account) public view returns (uint256) {
+        return
+            balanceOf(account)
+                .mul(rewardPerToken().sub(userRewardPerTokenPaid[account]))
+                .div(1e18)
+                .add(rewards[account]);
+    }
+
+    // stake visibility is public as overriding LPTokenWrapper's stake() function
+    function stake(uint256 amount) public updateReward(msg.sender) checkStart {
+        require(amount > 0, "Cannot stake 0");
+        super.stake(amount);
+        emit Staked(msg.sender, amount);
+    }
+
+    function withdraw(uint256 amount)
+        public
+        updateReward(msg.sender)
+        checkStart
+    {
+        require(amount > 0, "Cannot withdraw 0");
+        super.withdraw(amount);
+        emit Withdrawn(msg.sender, amount);
+    }
+
+    function exit() external {
+        withdraw(balanceOf(msg.sender));
+        getReward();
+    }
+
+    function getReward() public updateReward(msg.sender) checkStart {
+        uint256 reward = rewards[msg.sender];
+        if (reward > 0) {
+            rewards[msg.sender] = 0;
+            uint256 scalingFactor = YUAN(address(yuan)).yuansScalingFactor();
+            uint256 trueReward = reward.mul(scalingFactor).div(10**18);
+
+            IRewardDistribution(rewardDistribution).transferReward(
+                msg.sender,
+                trueReward
+            );
+            emit RewardPaid(msg.sender, reward);
         }
     }
 
-    /**
-     * @notice This should not be a normal operation
-     * To stop the reward distribution of a specific recipient, just set the reward to 0.
-     * Removing receipient means no reward can be claimed from it.
-     */
-    function removeRecipient(address recipient) external onlyOwner {
-        if (isRecipient[recipient]) {
-            isRecipient[recipient] = false;
-            emit RecipientRemoved(recipient);
+    modifier checkStart() {
+        require(block.timestamp >= starttime, "not start");
+        _;
+    }
+
+    function notifyRewardAmountAndDuration(uint256 reward, uint256 _duration)
+        external
+        onlyRewardDistribution
+        updateReward(address(0))
+    {
+        require(_duration > 0, "Duration must > 0");
+
+        // https://sips.synthetix.io/sips/sip-77
+        // increased buffer for scaling factor ( supports up to 10**4 * 10**18 scaling factor)
+        require(reward < uint256(-1) / 10**22, "rewards too large, would lock");
+
+        if (block.timestamp > starttime) {
+            rewardRate = reward.div(_duration);
+            duration = _duration;
+            lastUpdateTime = block.timestamp;
+            periodFinish = block.timestamp.add(_duration);
+            emit RewardAdded(reward, duration);
+        } else {
+            require(!initialized, "already initialized");
+            initialized = true;
+
+            rewardRate = reward.div(_duration);
+            duration = _duration;
+            lastUpdateTime = starttime;
+            periodFinish = starttime.add(_duration);
+            emit RewardAdded(reward, duration);
         }
     }
 
-    /**
-     * @param recipient The address of staking pool to distribute reward.
-     * @param reward The amount to distribute, with base scalingFactor.
-     * @param duration The period to distribute.
-     */
-    function addRecipientAndSetReward(
-        address recipient,
-        uint256 reward,
-        uint256 duration
-    ) external onlyOwner {
-        addRecipient(recipient);
-        setRecipientRewardAndDuration(recipient, reward, duration);
-    }
-
-    // if people are dumb and send tokens here, give governance ability to save them.
+    // This function allows governance to take unsupported tokens out of the
+    // contract, since this one exists longer than the other pools.
+    // This is in an effort to make someone whole, should they seriously
+    // mess up. There is no guarantee governance will vote to return these.
+    // It also allows for removal of airdropped tokens.
     function rescueTokens(
-        address token,
-        address to,
-        uint256 amount
-    ) external onlyOwner {
+        IERC20 _token,
+        uint256 amount,
+        address to
+    ) external {
+        // only gov
+        require(msg.sender == owner(), "!governance");
+        // cant take staked asset
+        require(_token != uni_lp, "uni_lp");
+        // cant take reward asset
+        require(_token != yuan, "yuan");
+
         // transfer to
-        SafeERC20.safeTransfer(IERC20(token), to, amount);
+        _token.transfer(to, amount);
     }
 }

@@ -692,7 +692,7 @@ contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0x460067f15e9B461a5F4c482E80217A2F45269385);
+    IERC20 public uni_lp = IERC20(0x232818620877fd9232e9ADe0c91EF5518EB11788);
 
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
@@ -718,16 +718,14 @@ contract LPTokenWrapper {
     }
 }
 
-contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
+contract YUANETHDFPool is LPTokenWrapper, IRewardDistributionRecipient {
     IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
-    uint256 public constant DURATION = 18 days;
-    uint256 public constant halveInterval = 1 days;
+    uint256 public constant DURATION = 12 days; // ~7 1/4 days
 
     uint256 public starttime = 1604462400; // 2020/11/4 12:0:0 (UTC+8)
     uint256 public periodFinish = 0;
-    uint256 public initialRewardRate = 0;
+    uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;
-    uint256 public distributionTime;
     uint256 public rewardPerTokenStored;
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
@@ -762,7 +760,11 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
         }
         return
             rewardPerTokenStored.add(
-                getrewardPerTokenAmount().mul(1e18).div(totalSupply())
+                lastTimeRewardApplicable()
+                    .sub(lastUpdateTime)
+                    .mul(rewardRate)
+                    .mul(1e18)
+                    .div(totalSupply())
             );
     }
 
@@ -807,76 +809,6 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
         }
     }
 
-    /**
-     * @dev Calculate the cumulative reward per token from lastUpdateTime to lastTimeRewardApplicable()
-     * such time span could be divided into 3 parts by halve intervals:
-     * (lastUpdateTime, firstIntervalEnd), (firstIntervalEnd, lastIntervalStart), (lastIntervalStart, lastTimeRewardApplicable())
-     */
-    function getrewardPerTokenAmount() public view returns (uint256) {
-        uint256 _timestamp = lastTimeRewardApplicable();
-        uint256 _distributionTime = distributionTime;
-        uint256 _lastUpdateTime = lastUpdateTime;
-
-        if (_timestamp < _distributionTime || _timestamp == _lastUpdateTime)
-            return 0;
-
-        uint256 _lastUpdateTimeOffset = _lastUpdateTime.sub(_distributionTime) %
-            halveInterval;
-        uint256 _firstIntervalEnd = _lastUpdateTime
-            .sub(_lastUpdateTimeOffset)
-            .add(halveInterval);
-
-        // The time span is too short that it has not reach _firstIntervalEnd
-        if (_timestamp < _firstIntervalEnd)
-            return
-                _timestamp.sub(_lastUpdateTime).mul(
-                    getFixedRewardRate(_lastUpdateTime)
-                );
-
-        // The amount from _lastUpdateTime to _firstIntervalEnd
-        uint256 _rewardPerTokenAmount = halveInterval
-            .sub(_lastUpdateTimeOffset)
-            .mul(getFixedRewardRate(_lastUpdateTime));
-
-        // The amount from _firstIntervalEnd to last interval start, it may contains n full halve interval (n >= 0)
-        // n = 0 if _firstIntervalEnd and _timestamp lay in the same halve interval
-        // _currentRewardRate represents 1/2 of the reward rate of last full interval
-        uint256 _currentRewardRate = getFixedRewardRate(_timestamp);
-        _rewardPerTokenAmount = _rewardPerTokenAmount.add(
-            (
-                halveInterval.mul(
-                    getFixedRewardRate(_firstIntervalEnd).sub(
-                        _currentRewardRate
-                    )
-                )
-            ) << 1
-        );
-
-        // Finally, the amount from last interval start to timestamp
-        return
-            _rewardPerTokenAmount.add(
-                (_timestamp.sub(_distributionTime) % halveInterval).mul(
-                    _currentRewardRate
-                )
-            );
-    }
-
-    function rewardRate() public view returns (uint256) {
-        return getFixedRewardRate(block.timestamp);
-    }
-
-    function getFixedRewardRate(uint256 _timestamp)
-        public
-        view
-        returns (uint256)
-    {
-        if (_timestamp < distributionTime) return 0;
-        return
-            initialRewardRate >>
-            (Math.min(_timestamp, periodFinish).sub(distributionTime) /
-                halveInterval);
-    }
-
     function notifyRewardAmount(uint256 reward)
         external
         onlyRewardDistribution
@@ -886,20 +818,20 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
         // increased buffer for scaling factor ( supports up to 10**4 * 10**18 scaling factor)
         require(reward < uint256(-1) / 10**22, "rewards too large, would lock");
 
-        uint256 _firstReward = reward.mul(1e18).div(
-            2e18 - (2e18 >> (DURATION.div(halveInterval)))
-        );
         if (block.timestamp > starttime) {
-            require(block.timestamp >= periodFinish, "not over yet");
-            initialRewardRate = _firstReward.div(halveInterval);
+            if (block.timestamp >= periodFinish) {
+                rewardRate = reward.div(DURATION);
+            } else {
+                uint256 remaining = periodFinish.sub(block.timestamp);
+                uint256 leftover = remaining.mul(rewardRate);
+                rewardRate = reward.add(leftover).div(DURATION);
+            }
             lastUpdateTime = block.timestamp;
-            distributionTime = block.timestamp;
             periodFinish = block.timestamp.add(DURATION);
             emit RewardAdded(reward);
         } else {
-            initialRewardRate = _firstReward.div(halveInterval);
+            rewardRate = reward.div(DURATION);
             lastUpdateTime = starttime;
-            distributionTime = starttime;
             periodFinish = starttime.add(DURATION);
             emit RewardAdded(reward);
         }

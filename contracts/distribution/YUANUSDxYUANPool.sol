@@ -692,7 +692,7 @@ contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0x460067f15e9B461a5F4c482E80217A2F45269385);
+    IERC20 public uni_lp = IERC20(0x7291c312E6333e58E2f1264162435429bc09EC4B);
 
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
@@ -718,7 +718,7 @@ contract LPTokenWrapper {
     }
 }
 
-contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
+contract YUANUSDxYUANPool is LPTokenWrapper, IRewardDistributionRecipient {
     IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
     uint256 public constant DURATION = 18 days;
     uint256 public constant halveInterval = 1 days;
@@ -731,6 +731,8 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
     uint256 public rewardPerTokenStored;
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
+
+    bool private once = false;
 
     event RewardAdded(uint256 reward);
     event Staked(address indexed user, uint256 amount);
@@ -772,6 +774,12 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
                 .mul(rewardPerToken().sub(userRewardPerTokenPaid[account]))
                 .div(1e18)
                 .add(rewards[account]);
+    }
+
+    function setLpToken(IERC20 uni_lp_) external {
+        require(!once);
+        uni_lp = uni_lp_;
+        once = true;
     }
 
     // stake visibility is public as overriding LPTokenWrapper's stake() function
@@ -889,6 +897,7 @@ contract YUANUSDxUSDCPool is LPTokenWrapper, IRewardDistributionRecipient {
         uint256 _firstReward = reward.mul(1e18).div(
             2e18 - (2e18 >> (DURATION.div(halveInterval)))
         );
+
         if (block.timestamp > starttime) {
             require(block.timestamp >= periodFinish, "not over yet");
             initialRewardRate = _firstReward.div(halveInterval);

@@ -144,7 +144,7 @@ contract YUANRebaser {
     bool public rebasingActive;
 
     /// @notice delays rebasing activation to facilitate liquidity
-    uint256 public constant rebaseDelay = 3 days;
+    uint256 public constant rebaseDelay = 9 days;
 
     /// @notice Time of TWAP initialization
     uint256 public timeOfTWAPInit;
@@ -208,7 +208,7 @@ contract YUANRebaser {
         address priceOracle_
     ) public {
         minRebaseTimeIntervalSec = 12 hours;
-        rebaseWindowOffsetSec = 28800; // 8am/8pm UTC rebases
+        rebaseWindowOffsetSec = 7200; // 10am/10pm UTC+8 rebases
 
         (address token0, address token1) = sortTokens(
             yuanAddress_,
@@ -254,8 +254,8 @@ contract YUANRebaser {
 
         // Percentages for each reserve
         rebaseMintPercs[0] = 10**17; // Treasury
-        rebaseMintPercs[1] = 5 * 10**16; // Liquidity
-        rebaseMintPercs[2] = 5 * 10**16; // Lending
+        rebaseMintPercs[1] = 0; // Liquidity
+        rebaseMintPercs[2] = 0; // Lending
 
         // 5%
         deviationThreshold = 5 * 10**16;
