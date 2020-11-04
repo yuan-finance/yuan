@@ -11,13 +11,12 @@
   "dependencies": {
     "dotenv-flow": "^3.2.0",
     "ethers": "^5.0.8",
-    "ganache-core": "^2.11.2",
-    "prettier": "^2.1.2",
-    "prettier-plugin-solidity": "^1.0.0-alpha.58"
+    "ganache-core": "^2.13.1"
   },
   "devDependencies": {
-    "@truffle/hdwallet-provider": "^1.1.0",
+    "@truffle/hdwallet-provider": "^1.1.1",
     "ethereumjs-abi": "^0.6.8",
-    "ethereumjs-util": "^7.0.4"
+    "ethereumjs-util": "^7.0.4",
+    "truffle-plugin-verify": "^0.5.0"
   }
 }
