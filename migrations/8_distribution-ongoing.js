@@ -104,6 +104,8 @@ async function deployDistribution(deployer, network, accounts) {
       yaun_usdx_pool.methods.transferOwnership(Timelock.address).send({ from: accounts[0], gas: 100000 }),
       incentive_distribution.methods.transferOwnership(Timelock.address).send({ from: accounts[0], gas: 100000 }),
     ]);
+
+    await YUAN._setIncentivizer(Reward_Distributor.address);
   }
 
   console.log("Calculate APY is:   ", APY.address,"\n")

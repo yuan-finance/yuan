@@ -719,11 +719,11 @@ contract LPTokenWrapper {
 }
 
 contract YUANETHAMPLPool is LPTokenWrapper, IRewardDistributionRecipient {
-    IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
+    IERC20 public yuan = IERC20(0x4A3e164684812DfB684AC36457E7fA805087c68E);
 
     uint256 public constant DURATION = 12 days;
 
-    uint256 public starttime = 1604462400; // 2020/11/4 12:0:0 (UTC+8)
+    uint256 public starttime = 1604545200; // 2020/11/5 11:0:0 (UTC+8)
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;

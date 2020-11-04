@@ -690,7 +690,7 @@ contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0xe2aAb7232a9545F29112f9e6441661fD6eEB0a5d);
+    IERC20 public uni_lp = IERC20(0xf0e5eb0B92F8427577469cC9B27eF67AeA19F115);
 
     uint256 private _totalSupply;
 
@@ -726,11 +726,10 @@ interface IRewardDistribution {
 }
 
 contract YUANUSDxIncentivizer is LPTokenWrapper, IRewardDistributionRecipient {
-    IERC20 public yuan = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
+    IERC20 public yuan = IERC20(0x4A3e164684812DfB684AC36457E7fA805087c68E);
     uint256 public duration;
 
-    //uint256 public initreward = 100000 * 10**18; // 10w with base scalingFactor
-    uint256 public starttime = 1601265600; // 2020-09-28 12:00:00 (UTC +00:00)
+    uint256 public starttime = 1605322800; // 2020/11/14 11:0:0 (UTC+8)
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0; // with base scalingFactor
     uint256 public lastUpdateTime;
