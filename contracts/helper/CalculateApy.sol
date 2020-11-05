@@ -175,6 +175,6 @@ contract CalculateApy {
             rmul(rewardRate, yuanPrice),
             rmul(lpStakingBalance, lpPrice)
         );
-        return (rmul(apy, year_seconds), rewardRate, yuanPrice);
+        return (apy.mul(year_seconds), rewardRate, yuanPrice);
     }
 }
