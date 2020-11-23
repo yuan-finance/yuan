@@ -36,6 +36,8 @@ interface IERC20 {
 
 interface IYAMIncentivizer {
     function DURATION() external view returns (uint256);
+    
+    function periodFinish() external view returns (uint256);
 
     function rewardRate() external view returns (uint256);
 
@@ -163,6 +165,7 @@ contract CalculateApy {
         )
     {
         IYAMIncentivizer totalIncentive_contract = IYAMIncentivizer(_pool);
+        uint256 finishTime = totalIncentive_contract.periodFinish();
         uint256 yuanPrice = getTokenPrice(yuanAddress);
         address uniPool = getUniAddress(_pool);
         (uint256 lpPrice, , , , ) = getLpPrice(uniPool);
@@ -175,6 +178,9 @@ contract CalculateApy {
             rmul(rewardRate, yuanPrice),
             rmul(lpStakingBalance, lpPrice)
         );
+        if (block.timestamp >= finishTime) {
+            return (0, rewardRate, yuanPrice);
+        }
         return (apy.mul(year_seconds), rewardRate, yuanPrice);
     }
 }
