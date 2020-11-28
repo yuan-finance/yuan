@@ -71,8 +71,8 @@ contract GovernorAlpha {
     /// @notice The address of the Compound governance token
     YUANInterface public yuan;
 
-    /// @notice The address of the Governor Guardian
-    address public guardian;
+    /// @notice The address of the Governor Watcher
+    address public watcher;
 
     /// @notice The total number of proposals
     uint256 public proposalCount;
@@ -179,7 +179,7 @@ contract GovernorAlpha {
     constructor(address timelock_, address yuan_) public {
         timelock = TimelockInterface(timelock_);
         yuan = YUANInterface(yuan_);
-        guardian = msg.sender;
+        watcher = msg.sender;
     }
 
     function propose(
@@ -326,7 +326,7 @@ contract GovernorAlpha {
 
         Proposal storage proposal = proposals[proposalId];
         require(
-            msg.sender == guardian ||
+            msg.sender == watcher ||
                 yuan.getPriorVotes(proposal.proposer, sub256(block.number, 1)) <
                 proposalThreshold(),
             "GovernorAlpha::cancel: proposer above threshold"
@@ -466,18 +466,18 @@ contract GovernorAlpha {
 
     function __acceptAdmin() public {
         require(
-            msg.sender == guardian,
-            "GovernorAlpha::__acceptAdmin: sender must be gov guardian"
+            msg.sender == watcher,
+            "GovernorAlpha::__acceptAdmin: sender must be gov watcher"
         );
         timelock.acceptAdmin();
     }
 
     function __abdicate() public {
         require(
-            msg.sender == guardian,
-            "GovernorAlpha::__abdicate: sender must be gov guardian"
+            msg.sender == watcher,
+            "GovernorAlpha::__abdicate: sender must be gov watcher"
         );
-        guardian = address(0);
+        watcher = address(0);
     }
 
     function add256(uint256 a, uint256 b) internal pure returns (uint256) {
