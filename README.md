@@ -40,6 +40,10 @@ Yuan is an elastic token tracking the exchange rate of Chinese Yuan against USD.
 		<td> 0x712350BA552b4c84a602c7e635813DA63ef5bA82 </td>
 	</tr>
 	<tr>
+		<td> GovernorAlpha2 </td>
+		<td> 0x6D5556b3CbD13375FAa08831588005900A966c60 </td>
+	</tr>
+	<tr>
 		<th> The Ancestors </th>
 		<th> </th>
 	</tr>
