@@ -36,7 +36,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 import "../lib/SafeMath.sol";
 
-contract GovernorAlpha {
+contract GovernorAlphaV2 {
     /// @notice The name of this contract
     string public constant name = "YUAN Governor Alpha";
 

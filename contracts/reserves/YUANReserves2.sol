@@ -6,7 +6,7 @@ import "../lib/IERC20.sol";
 import "../lib/SafeERC20.sol";
 import "../token/YUANTokenInterface.sol";
 
-contract YUANReserves {
+contract YUANReservesV2 {
     // Token that serves as a reserve for YUAN
     address public reserveToken;
 
