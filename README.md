@@ -28,6 +28,10 @@ Yuan is an elastic token tracking the exchange rate of Chinese Yuan against USD.
 		<td> 0x7ba4e109c1dc8B52ed63D8EdF0e951685DDe4DA6 </td>
 	</tr>
 	<tr>
+		<td> YUANReserves2 </td>
+		<td> 0xb37c599fbdd3f1c30fcae51194ec802e52f70f61 </td>
+	</tr>
+	<tr>
 		<td> YUANRebaser </td>
 		<td> 0x71a6Ad88AC18EB83D741E411f8938B33918D0125 </td>
 	</tr>
