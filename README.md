@@ -21,7 +21,7 @@ Yuan is an elastic token tracking the exchange rate of Chinese Yuan against USD.
 	</tr>
 	<tr>
 		<td> PriceOracle </td>
-		<td> 0x8ABb6cc2810c22Df468E5fC491AB693F0901c927 </td>
+		<td> 0x95122089705594960a7c2074206d01679b073e69 </td>
 	</tr>
 	<tr>
 		<td> YUANReserves </td>
